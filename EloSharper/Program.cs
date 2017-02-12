@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using EloSharper.database;
 
 namespace EloSharper
@@ -54,8 +55,56 @@ namespace EloSharper
 					case "calculate elo":
 						Console.WriteLine(CalculateElo());
 						break;
+					case "load players":
+						Console.WriteLine(LoadPlayersFromFile());
+						break;
+					case "load games":
+						Console.WriteLine(LoadGamesFromFile());
+						break;
 				}
 			}
+		}
+
+		public static string LoadPlayersFromFile()
+		{
+			Console.Write("file:");
+			string filelocation = Console.ReadLine();
+			if (!File.Exists(filelocation))
+			{
+				return "File does not exist";
+			}
+			string[] lines = File.ReadAllLines(filelocation);
+			foreach (string line in lines)
+			{
+				string[] playerinfo = line.Split(new char[0]);
+				if (!db.AddPlayer(playerinfo[0], playerinfo[1]))
+				{
+					return "Error reading from file";
+				}
+			}
+			modified = true;
+			return "Players loaded from file";
+		}
+
+		public static string LoadGamesFromFile()
+		{
+			Console.Write("file:");
+			string filelocation = Console.ReadLine();
+			if (!File.Exists(filelocation))
+			{
+				return "File does not exist";
+			}
+			string[] lines = File.ReadAllLines(filelocation);
+			foreach (string line in lines)
+			{
+				string[] gameinfo = line.Split(new char[0]);
+				if (!db.AddGame(gameinfo[0], gameinfo[1], gameinfo[2], Int32.Parse(gameinfo[3])))
+				{
+					return "Error reading from file";
+				}
+			}
+			modified = true;
+			return "Games loaded from file";
 		}
 
 		public static string CalculateElo()
