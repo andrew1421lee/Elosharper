@@ -74,6 +74,8 @@ namespace EloSharper.database
 			public List<string> Players;
 			[JsonProperty("winner")]
 			public int winner;
+			[JsonProperty("rated")]
+			public bool rated;
 		}
 
 		[JsonProperty("database")]

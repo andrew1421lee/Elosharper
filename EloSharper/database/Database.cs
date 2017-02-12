@@ -100,6 +100,7 @@ namespace EloSharper.database
 			NewGame.DateTime = datetime;
 			NewGame.Players = new List<string>();
 			NewGame.index = DataManager.Data.Games.Count;
+			NewGame.rated = false;
 			NewGame.id = Convert.ToBase64String(Guid.NewGuid().ToByteArray());
 			try
 			{
@@ -255,7 +256,12 @@ namespace EloSharper.database
 		{
 			foreach (var game in DataManager.Data.Games)
 			{
+				if (game.rated)
+				{
+					continue;
+				}
 				AdjustElo(DataManager.Data.Players[FindPlayerByID(game.Players[0])], DataManager.Data.Players[FindPlayerByID(game.Players[1])], game.winner);
+				DataManager.Data.Games[game.index].rated = true;
 			}
 		}
 
