@@ -250,6 +250,14 @@ namespace EloSharper.database
 			}
 		}
 
+		public void CalculateEloForAllGames()
+		{
+			foreach (var game in DataManager.Data.Games)
+			{
+				AdjustElo(DataManager.Data.Players[FindPlayerByID(game.Players[0])], DataManager.Data.Players[FindPlayerByID(game.Players[1])], game.winner);
+			}
+		}
+
 		public void AdjustElo(DataManager.Player P1, DataManager.Player P2, int winner)
 		{
 			double[] NewElo = EloManager.CalculateElo(P1.rating, P2.rating, winner);

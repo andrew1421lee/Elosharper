@@ -51,8 +51,17 @@ namespace EloSharper
 					case "elotest":
 						Console.WriteLine(EloTest());
 						break;
+					case "calculate elo":
+						Console.WriteLine(CalculateElo());
+						break;
 				}
 			}
+		}
+
+		public static string CalculateElo()
+		{
+			db.CalculateEloForAllGames();
+			return "Elo Calculated";
 		}
 
 		public static string EloTest()
