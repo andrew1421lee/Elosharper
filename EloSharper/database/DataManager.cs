@@ -51,7 +51,7 @@ namespace EloSharper.database
 			[JsonProperty("id")]
 			public string id;
 			[JsonProperty("rating")]
-			public ulong rating;
+			public int rating;
 			[JsonProperty("index")]
 			public int index;
 			[JsonProperty("totalgames")]
