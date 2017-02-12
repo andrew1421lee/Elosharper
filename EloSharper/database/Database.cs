@@ -10,6 +10,148 @@ namespace EloSharper.database
 			DataManager.Load();
 		}
 
+		public bool EditGame(int index, string datetime, string p1, string p2, int winner)
+		{
+			if (DataManager.Data.Games.Count <= index)
+			{
+				return false;
+			}
+
+			if (datetime != null)
+			{
+				DataManager.Data.Games[index].DateTime = datetime;
+			}
+			if (p1 != null)
+			{
+				if (FindPlayerByName(p1) > 0)
+				{
+					DataManager.Data.Games[index].Players.RemoveAt(0);
+					DataManager.Data.Games[index].Players.Insert(0, DataManager.Data.Players[FindPlayerByName(p1)].id);
+				}
+			}
+			if (p2 != null)
+			{
+				if (FindPlayerByName(p2) > 0)
+				{
+					DataManager.Data.Games[index].Players.RemoveAt(1);
+					DataManager.Data.Games[index].Players.Insert(1, DataManager.Data.Players[FindPlayerByName(p2)].id);
+				}
+			}
+			if (winner > 0)
+			{
+				DataManager.Data.Games[index].winner = winner;
+			}
+
+			return true;
+		}
+
+		/// <summary>
+		/// Deletes a game.
+		/// </summary>
+		/// <returns><c>true</c>, if game was deleted, <c>false</c> otherwise.</returns>
+		/// <param name="index">Index.</param>
+		public bool DeleteGame(int index)
+		{
+			if (index >= DataManager.Data.Games.Count)
+			{
+				return false;
+			}
+			var Target = DataManager.Data.Games[index];
+			MinusUpdateGameCounts(Target.Players[0], Target.Players[1], Target.winner);
+			DataManager.Data.Games.RemoveAt(index);
+			return true;
+		}
+
+		/// <summary>
+		/// Adds a game.
+		/// </summary>
+		/// <returns><c>true</c>, if game was added, <c>false</c> otherwise.</returns>
+		/// <param name="datetime">Datetime.</param>
+		/// <param name="p1">P1.</param>
+		/// <param name="p2">P2.</param>
+		/// <param name="winner">Winner.</param>
+		public bool AddGame(string datetime, string p1, string p2, int winner)
+		{
+			var NewGame = new DataManager.Game();
+			NewGame.DateTime = datetime;
+			NewGame.Players = new List<string>();
+			NewGame.index = DataManager.Data.Games.Count;
+			NewGame.id = Convert.ToBase64String(Guid.NewGuid().ToByteArray());
+			try
+			{
+				NewGame.Players.Add(DataManager.Data.Players[FindPlayerByName(p1)].id);
+				NewGame.Players.Add(DataManager.Data.Players[FindPlayerByName(p2)].id);
+			}
+			catch (IndexOutOfRangeException)
+			{
+				return false;
+			}
+			NewGame.winner = winner;
+
+			AddUpdateGameCounts(p1, p2, winner);
+
+			DataManager.Data.Games.Add(NewGame);
+
+			return true;
+		}
+
+		/// <summary>
+		/// Updates the game counts for game add.
+		/// </summary>
+		/// <param name="p1">P1.</param>
+		/// <param name="p2">P2.</param>
+		/// <param name="winner">Winner.</param>
+		private void AddUpdateGameCounts(string p1, string p2, int winner)
+		{
+			switch (winner)
+			{
+				case 0:
+					DataManager.Data.Players[FindPlayerByName(p1)].wins++;
+					DataManager.Data.Players[FindPlayerByName(p1)].totalgames++;
+					DataManager.Data.Players[FindPlayerByName(p2)].totalgames++;
+					break;
+				case 1:
+					DataManager.Data.Players[FindPlayerByName(p2)].wins++;
+					DataManager.Data.Players[FindPlayerByName(p2)].totalgames++;
+					DataManager.Data.Players[FindPlayerByName(p1)].totalgames++;
+					break;
+				case 2:
+					DataManager.Data.Players[FindPlayerByName(p1)].draws++;
+					DataManager.Data.Players[FindPlayerByName(p1)].totalgames++;
+					DataManager.Data.Players[FindPlayerByName(p2)].totalgames++;
+					DataManager.Data.Players[FindPlayerByName(p2)].draws++;
+					break;
+			}
+		}
+		/// <summary>
+		/// Updates the game counts for game removal.
+		/// </summary>
+		/// <param name="p1">P1.</param>
+		/// <param name="p2">P2.</param>
+		/// <param name="winner">Winner.</param>
+		private void MinusUpdateGameCounts(string p1, string p2, int winner)
+		{
+			switch (winner)
+			{
+				case 0:
+					DataManager.Data.Players[FindPlayerByID(p1)].wins--;
+					DataManager.Data.Players[FindPlayerByID(p1)].totalgames--;
+					DataManager.Data.Players[FindPlayerByID(p2)].totalgames--;
+					break;
+				case 1:
+					DataManager.Data.Players[FindPlayerByID(p2)].wins--;
+					DataManager.Data.Players[FindPlayerByID(p2)].totalgames--;
+					DataManager.Data.Players[FindPlayerByID(p1)].totalgames--;
+					break;
+				case 2:
+					DataManager.Data.Players[FindPlayerByID(p1)].draws--;
+					DataManager.Data.Players[FindPlayerByID(p1)].totalgames--;
+					DataManager.Data.Players[FindPlayerByID(p2)].totalgames--;
+					DataManager.Data.Players[FindPlayerByID(p2)].draws--;
+					break;
+			}
+		}
+
 		/// <summary>
 		/// Adds a new player.
 		/// </summary>
@@ -37,7 +179,17 @@ namespace EloSharper.database
 				return false;
 			}
 		}
-
+		/// <summary>
+		/// Edits the player.
+		/// </summary>
+		/// <returns><c>true</c>, if player was edited, <c>false</c> otherwise.</returns>
+		/// <param name="oldname">Oldname.</param>
+		/// <param name="name">Name.</param>
+		/// <param name="alias">Alias.</param>
+		/// <param name="draws">Draws.</param>
+		/// <param name="rating">Rating.</param>
+		/// <param name="totalgames">Totalgames.</param>
+		/// <param name="wins">Wins.</param>
 		public bool EditPlayer(string oldname, string name, string alias, int draws, int rating, int totalgames, int wins)
 		{
 			int PlayerIndex = FindPlayerByName(oldname);

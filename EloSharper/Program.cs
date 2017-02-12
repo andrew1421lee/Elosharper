@@ -31,12 +31,115 @@ namespace EloSharper
 					case "list players":
 						Console.WriteLine(db.ListPlayers());
 						break;
+					case "add game":
+						Console.WriteLine(AddGame());
+						break;
+					case "delete game":
+						Console.WriteLine(DeleteGame());
+						break;
+					case "edit game":
+						Console.WriteLine(EditGame());
+						break;
 					case "save":
 						DataManager.Save();
 						Console.WriteLine("Saved");
 						modified = false;
 						break;
 				}
+			}
+		}
+
+		public static string EditGame()
+		{
+			Console.Write("index of game:");
+			int index = Int32.Parse(Console.ReadLine());
+
+			Console.Write("datetime:");
+			string datetime = Console.ReadLine();
+			if (datetime.Length < 1)
+			{
+				datetime = null;
+			}
+			Console.Write("player 1:");
+			string p1_name = Console.ReadLine();
+			if (p1_name.Length < 1)
+			{
+				p1_name = null;
+			}
+			Console.Write("player 2:");
+			string p2_name = Console.ReadLine();
+			if (p2_name.Length < 1)
+			{
+				p2_name = null;
+			}
+			Console.Write("winner (0, 1, or 2)");
+			int winner = Int32.Parse(Console.ReadLine());
+			if (winner > 2 || winner < 0)
+			{
+				winner = -1;
+			}
+			if (db.EditGame(index, datetime, p1_name, p2_name, winner))
+			{
+				return "Game edited";
+			}
+			else {
+				return "Edit failed";
+			}
+		}
+
+		public static string DeleteGame()
+		{
+			Console.Write("index:");
+			int index = Int32.Parse(Console.ReadLine());
+			if (db.DeleteGame(index))
+			{
+				modified = true;
+				return "Game deleted";
+			}
+			else {
+				return "Delete failed";
+			}
+		}
+
+		public static string AddGame()
+		{
+			Console.Write("date:");
+			string date = Console.ReadLine();
+			if (date.Length < 1)
+			{
+				return "Invalid input";
+			}
+			Console.Write("time:");
+			string time = Console.ReadLine();
+			if (time.Length < 1)
+			{
+				return "Invalid input";
+			}
+			Console.Write("player 1:");
+			string p1_name = Console.ReadLine();
+			if (p1_name.Length < 1)
+			{
+				return "Invalid input";
+			}
+			Console.Write("player 2:");
+			string p2_name = Console.ReadLine();
+			if (p2_name.Length < 1)
+			{
+				return "Invalid input";
+			}
+			Console.Write("winner (0, 1, or 2):");
+			int winner = Int32.Parse(Console.ReadLine());
+			if (winner > 2 || winner < 0)
+			{
+				return "Invalid input";
+			}
+			if (db.AddGame($"{date} {time}", p1_name, p2_name, winner))
+			{
+				modified = true;
+				return "Game Added";
+			}
+			else {
+				return "Add failed";
 			}
 		}
 
@@ -95,8 +198,16 @@ namespace EloSharper
 		{
 			Console.Write("name:");
 			string name = Console.ReadLine();
+			if (name.Length < 1)
+			{
+				return "Invalid input";
+			}
 			Console.Write("aliases:");
 			string aliases = Console.ReadLine();
+			if (aliases.Length < 1)
+			{
+				return "Invalid input";
+			}
 
 			if (!db.AddPlayer(name, aliases))
 			{
