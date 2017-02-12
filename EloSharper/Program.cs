@@ -40,6 +40,9 @@ namespace EloSharper
 					case "edit game":
 						Console.WriteLine(EditGame());
 						break;
+					case "list games":
+						Console.WriteLine(db.ListGames());
+						break;
 					case "save":
 						DataManager.Save();
 						Console.WriteLine("Saved");

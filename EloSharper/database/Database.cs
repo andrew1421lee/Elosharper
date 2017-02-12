@@ -10,6 +10,29 @@ namespace EloSharper.database
 			DataManager.Load();
 		}
 
+		public string ListGames()
+		{
+			string returnval = "";
+			foreach (var game in DataManager.Data.Games)
+			{
+				string players = "";
+				players += $"[{game.DateTime}] ";
+				players += $"{DataManager.Data.Players[FindPlayerByID(game.Players[0])].name} vs. ";
+				players += $"{DataManager.Data.Players[FindPlayerByID(game.Players[1])].name} - ";
+				players += $"Winner: {game.winner + 1}";
+				returnval += $"{players} \n";
+			}
+			return returnval;
+		}
+		/// <summary>
+		/// Edits a game given by index.
+		/// </summary>
+		/// <returns><c>true</c>, if game was edited, <c>false</c> otherwise.</returns>
+		/// <param name="index">Index.</param>
+		/// <param name="datetime">Datetime.</param>
+		/// <param name="p1">P1.</param>
+		/// <param name="p2">P2.</param>
+		/// <param name="winner">Winner.</param>
 		public bool EditGame(int index, string datetime, string p1, string p2, int winner)
 		{
 			if (DataManager.Data.Games.Count <= index)
