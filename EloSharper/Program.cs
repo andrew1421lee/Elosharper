@@ -19,6 +19,9 @@ namespace EloSharper
 				string input = Console.ReadLine();
 				switch (input)
 				{
+					case "about":
+						Console.WriteLine("EloSharper by Anchu Lee\nCompetitive video game player database manager");
+						break;
 					case "exit":
 						Exit();
 						break;

@@ -297,7 +297,7 @@ namespace EloSharper.database
 				{
 					aliases += $"{nickname},";
 				}
-				returnval += $"{plr.index}: {plr.name} aka. {aliases} | ELO: {plr.rating}. Total games: {plr.totalgames}. Wins: {plr.wins}\n";
+				returnval += $"{plr.index}: {plr.name} aka. {aliases} | ELO: {plr.rating.ToString("#.00")}. Total games: {plr.totalgames}. Wins: {plr.wins}\n";
 			}
 			return returnval;
 
