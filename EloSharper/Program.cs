@@ -1,6 +1,8 @@
 ﻿using System;
 using System.IO;
 using EloSharper.database;
+using EloSharper.challonge;
+using Newtonsoft.Json.Linq;
 
 namespace EloSharper
 {
@@ -61,8 +63,39 @@ namespace EloSharper
 					case "load games":
 						Console.WriteLine(LoadGamesFromFile());
 						break;
+					case "load challonge":
+						Console.WriteLine(LoadFromChallonge());
+						break;
 				}
 			}
+		}
+
+		public static string LoadFromChallonge()
+		{
+			Console.Write("file:");
+			string filelocation = Console.ReadLine();
+			ChallongeDataManager.Load(filelocation);
+			foreach (var part in ChallongeDataManager.Participants)
+			{
+				JObject player = (JObject)part["participant"];
+				db.AddPlayer(player["name"].ToString(), player["id"].ToString());
+			}
+			foreach (var match in ChallongeDataManager.Matches)
+			{
+				var game = (JObject)match["match"];
+				int winner = 0;;
+				if (game["player1_id"].ToString() == game["winner_id"].ToString())
+				{
+					winner = 0;
+				}
+				else if (game["player2_id"].ToString() == game["winner_id"].ToString())
+				{
+					winner = 1;
+				}
+				db.AddGame(game["updated_at"].ToString(), game["player1_id"].ToString(), game["player2_id"].ToString(), winner);
+			}
+			modified = true;
+			return "Loaded from file";
 		}
 
 		public static string LoadPlayersFromFile()
