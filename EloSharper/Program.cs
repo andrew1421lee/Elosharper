@@ -20,7 +20,7 @@ namespace EloSharper
 				switch (input)
 				{
 					case "about":
-						Console.WriteLine("EloSharper by Anchu Lee\nCompetitive video game player database manager");
+						Console.WriteLine("SmashELO by Anchu Lee\nCompetitive video game player database manager");
 						break;
 					case "exit":
 						Exit();
