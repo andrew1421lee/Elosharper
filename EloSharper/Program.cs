@@ -69,10 +69,19 @@ namespace EloSharper
 					case "load challonge":
 						Console.WriteLine(LoadFromChallonge());
 						break;
+					case "sort elo":
+						Console.WriteLine(SortByElo());
+						break;
 				}
 			}
 		}
 
+		public static string SortByElo()
+		{
+			db.SortPlayersByElo();
+			modified = true;
+			return "Sorted";
+		}
 		public static string LoadFromChallonge()
 		{
 			Console.Write("file:");

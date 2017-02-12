@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace EloSharper.database
 {
@@ -288,7 +289,7 @@ namespace EloSharper.database
 		/// <returns>The players.</returns>
 		public string ListPlayers()
 		{
-			
+
 			string returnval = "";
 			foreach (var plr in DataManager.Data.Players)
 			{
@@ -301,6 +302,12 @@ namespace EloSharper.database
 			}
 			return returnval;
 
+		}
+
+		public void SortPlayersByElo()
+		{
+			DataManager.Data.Players = DataManager.Data.Players.OrderByDescending(o => o.rating).ToList();
+			RebuildPlayerIndex();
 		}
 
 		/// <summary>
