@@ -48,8 +48,23 @@ namespace EloSharper
 						Console.WriteLine("Saved");
 						modified = false;
 						break;
+					case "elotest":
+						Console.WriteLine(EloTest());
+						break;
 				}
 			}
+		}
+
+		public static string EloTest()
+		{
+			Console.Write("p1 elo:");
+			float p1 = float.Parse(Console.ReadLine());
+			Console.Write("p2 elo:");
+			float p2 = float.Parse(Console.ReadLine());
+			Console.Write("winner:");
+			int winner = Int32.Parse(Console.ReadLine());
+			double[] result = EloManager.CalculateElo(p1, p2, winner);
+			return $"p1:{result[0]}, p2:{result[1]}";
 		}
 
 		public static string EditGame()

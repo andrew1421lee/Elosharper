@@ -112,6 +112,7 @@ namespace EloSharper.database
 			NewGame.winner = winner;
 
 			AddUpdateGameCounts(p1, p2, winner);
+			//AdjustElo(DataManager.Data.Players[FindPlayerByName(p1)], DataManager.Data.Players[FindPlayerByName(p2)], winner);
 
 			DataManager.Data.Games.Add(NewGame);
 
@@ -192,7 +193,7 @@ namespace EloSharper.database
 				NewPlayer.draws = 0;
 				NewPlayer.index = DataManager.Data.Players.Count;
 				NewPlayer.id = Convert.ToBase64String(Guid.NewGuid().ToByteArray());
-				NewPlayer.rating = 1000;
+				NewPlayer.rating = 1000.00;
 				NewPlayer.totalgames = 0;
 				NewPlayer.wins = 0;
 				DataManager.Data.Players.Add(NewPlayer);
@@ -249,6 +250,30 @@ namespace EloSharper.database
 			}
 		}
 
+		public void AdjustElo(DataManager.Player P1, DataManager.Player P2, int winner)
+		{
+			double[] NewElo = EloManager.CalculateElo(P1.rating, P2.rating, winner);
+			EditPlayerElo(P1.id, NewElo[0]);
+			EditPlayerElo(P2.id, NewElo[1]);
+		}
+
+		/// <summary>
+		/// Edits the player elo.
+		/// </summary>
+		/// <returns><c>true</c>, if player elo was edited, <c>false</c> otherwise.</returns>
+		/// <param name="id">Identifier.</param>
+		/// <param name="elo">Elo.</param>
+		public bool EditPlayerElo(string id, double elo)
+		{
+			int index = FindPlayerByID(id);
+			if (index < 0)
+			{
+				return false;
+			}
+			DataManager.Data.Players[index].rating = elo;
+			return true;
+		}
+
 		/// <summary>
 		/// Lists the players.
 		/// </summary>
@@ -264,7 +289,7 @@ namespace EloSharper.database
 				{
 					aliases += $"{nickname},";
 				}
-				returnval += $"{plr.index}: {plr.name} aka. {aliases} | Total games: {plr.totalgames}. Wins: {plr.wins}\n";
+				returnval += $"{plr.index}: {plr.name} aka. {aliases} | ELO: {plr.rating}. Total games: {plr.totalgames}. Wins: {plr.wins}\n";
 			}
 			return returnval;
 
